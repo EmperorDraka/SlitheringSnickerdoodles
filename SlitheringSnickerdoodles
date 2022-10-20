@@ -75,41 +75,28 @@ package classes.Items.Miscellaneous
 					choices.splice(x,1);
 				}
 
-				//Generic TFs
-				//Naga tail TF - req 6' tall
-				if(target.tallness >= 72 && changes < changeLimit && rand(3) == 0 && target.legCount != 1 && target.legType != GLOBAL.TYPE_NAGA)
+			//Generic TFs
+			// Legs not Lizan:
+			// Legs become Lizan. Legs gains scaled, paws flags. Legcount must be 2 (does not affect Nagas, Taurs), Plantigrade/Digitigrade tags are retained from previous leg type (if neither exists, digitigrade tag is assigned as default)
+			if (target.legCount == 2 && target.legType != GLOBAL.TYPE_LIZAN)
+			{
+				if (target.legTypeUnlocked(GLOBAL.TYPE_LIZAN) && target.legFlagsUnlocked(GLOBAL.FLAG_PAWS) && target.legFlagsUnlocked(GLOBAL.FLAG_SCALED)) validTFs.push(function (target:Creature):void
 				{
-					if (target.legTypeUnlocked(GLOBAL.TYPE_NAGA))
-					{
-						//Single leg!
-						if(target.legCount == 1) kGAMECLASS.output("\n\nYour [pc.leg] abruptly goes weak, dropping you flat on your [pc.butt], and just in time, by the looks of things. Your lower limb is twisting and writhing");
-						//Multileg!
-						else kGAMECLASS.output("\n\nYour [pc.legs] abruptly go weak, dropping you flat on your [pc.butt], and just in time by the looks of things. Your lower limbs have knotted together into one fused mass of writhing flesh");
-						//Both:
-						kGAMECLASS.output(", though all you feel is a slightly achy throb and the occasional twinge of a new bone forming. Over time, the singular extremity becomes longer and longer, tapered down to a pointed tip. It tingles when tiny, iridescent plates emerge to cover it. <b>You’re growing a tail that’s just like a naleen’s!</b> The growing scales even ");
-						if(target.hasHair()) kGAMECLASS.output("match your [pc.hair]");
-						else kGAMECLASS.output("match the hair you used to have");
-						kGAMECLASS.output(".");
-						//Naleen scales = hair color as per codex.
-						target.scaleColor = target.hairColor;
-						target.legCount = 1;
-						target.genitalSpot = 0;
-						target.clearLegFlags();
-						target.addLegFlag(GLOBAL.FLAG_PREHENSILE);
-						target.addLegFlag(GLOBAL.FLAG_TAPERED);
-						target.addLegFlag(GLOBAL.FLAG_SMOOTH);
-						target.addLegFlag(GLOBAL.FLAG_TENDRIL);
-						target.addLegFlag(GLOBAL.FLAG_SCALED);
-						target.legType = GLOBAL.TYPE_NAGA;
-						kGAMECLASS.output("\n\nSlithering back up atop it is practically second nature to you, as easy as walking or running ever was.");
-						
-						changes++;
-					}
-					else
-					{
-						kGAMECLASS.output("\n\n" + target.legTypeLockedMessage());
-					}
+					output("\n\nYour [pc.legs] are stricken by stabbing pains as their skeletal arrangement begins to shift and reshuffle. You manage to get off your [pc.feet] before you suffer an unseemly fall, turning your attention to your shifting [pc.legsNoun]. The changes are over almost as quickly as they come, <b>leaving you with distinctly reptilian looking legs.</b> Your new feet have three toes, tipped with sharp looking claws, and a smaller toe-claw in back for better grip.");
+					
+					target.legType = GLOBAL.TYPE_LIZAN;
+					var wasPlanty:Boolean = target.hasLegFlag(GLOBAL.FLAG_PLANTIGRADE);
+					target.clearLegFlags();
+					if (wasPlanty) target.addLegFlag(GLOBAL.FLAG_PLANTIGRADE);
+					else target.addLegFlag(GLOBAL.FLAG_DIGITIGRADE);
+					target.addLegFlag(GLOBAL.FLAG_SCALED);
+					target.addLegFlag(GLOBAL.FLAG_PAWS);
+				});
+				else if (!target.legTypeUnlocked(GLOBAL.TYPE_LIZAN)) lockedTFs.push(target.legTypeLockedMessage);
+				else lockedTFs.push(target.legFlagsLockedMessage);
 				}
+			}
+			
 				//Increase height to 6' then rarely to 6'5"
 				if (changes < changeLimit && ((target.tallness < 72 && rand(3) == 0) || (target.tallness < 77 && rand(10) == 0))) {
 					if (target.tallnessUnlocked(77))
