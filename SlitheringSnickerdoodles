@@ -9,10 +9,10 @@ package classes.Items.Miscellaneous
 	import classes.StringUtil;
 	import classes.Engine.Utility.num2Text;
 	
-	public class NagaNougat extends ItemSlotClass
+	public class SlitheringSnickerdoodles extends ItemSlotClass
 	{
 		//constructor
-		public function NagaNougat()
+		public function SlitheringSnickerdoodles()
 		{
 			this._latestVersion = 1;
 			
@@ -20,22 +20,22 @@ package classes.Items.Miscellaneous
 			this.stackSize = 10;
 			this.type = GLOBAL.FOOD;
 			//Used on inventory buttons
-			this.shortName = "NagaNougat";
+			this.shortName = "SnakeCookies";
 			//Regular name
-			this.longName = "a tin of naga nougat";
+			this.longName = "a bag of slithering snickerdoodles";
 			
 			TooltipManager.addFullName(this.shortName, StringUtil.toTitleCase(this.longName));
 			
 			//Longass shit, not sure what used for yet.
-			this.description = "a tin of naga nougat";
+			this.description = "a bag of slithering snickerdoodles";
 			//Displayed on tooltips during mouseovers
-			this.tooltip = "This small pouch has a few dried leaves inside. The codex indicates that they’re locally referred to on Mhen’ga as naleen nip. When chewed by the aliens of the same name, they supposedly introduce a state of mild euphoria. The feline snake-women love them. You’re fairly certain the foreign plant matter <b>will</b> transform you if you chew on it.\n\n<b>Known to cause slight amounts of taint. Check your Codex for details.</b>";
+			this.tooltip = "A bag full of snake shaped snickerdoodles. The codex says that they were origionally created by the Slyverens as a treat to be served on special occasions.";
 			
 			TooltipManager.addTooltip(this.shortName, this.tooltip);
 			
 			this.attackVerb = "";
 			//Information
-			this.basePrice = 5;
+			this.basePrice = 100;
 			this.attack = 0;
 			this.defense = 0;
 			this.shieldDefense = 0;
@@ -60,19 +60,11 @@ package classes.Items.Miscellaneous
 			if(rand(3) == 0) changeLimit++;
 			kGAMECLASS.clearOutput();
 			if(target is PlayerCharacter) {
-				kGAMECLASS.output("Grabbing the leaves and rolling them together, you pop the half-formed ball into your mouth and start chewing. They have a relatively mild spiciness to them that doesn’t quite compare to any pepper you’ve ever tried, just enough to make your [pc.tongue] tingle a little bit. The longer you chew, the more the leaves dissolve, and the more you salivate, forcing you to swallow some of the mixture. You don’t really get much of a buzz; the euphoric effect must only work on ");
-				if(target.race() == "naleen") kGAMECLASS.output("full-blooded ");
-				kGAMECLASS.output("naleen.");
-				kGAMECLASS.processTime(3);
-				target.taint(1);
+				kGAMECLASS.output("You open the bag and take one of the cookies out of it, you give the cookie out of taking a moment to admired its cute snake shape and thinking about how the baker made it before popping the cookie in your mouth.");
 				
 				//Stat TFs
 				//Increase libido to 60
-				//Decrease intelligence up to 6x maximum with no minimum.
-				//Decrease intelligence if above 20
-				//Decrease willpower once
-				//Decrease willpower if above 25
-				//Increase physique to 10
+				//Increase reflexes to 15
 
 				choices = new Array();
 				if(target.hasCock()) choices[choices.length] = dudeNaleenTfs;
@@ -135,21 +127,25 @@ package classes.Items.Miscellaneous
 					}
 				}
 
-				//Grow claw-arms - req fur
-				if (target.armType != GLOBAL.TYPE_FELINE && changes < changeLimit && rand(3) == 0 && target.skinType == GLOBAL.SKIN_TYPE_FUR) {
-					if (target.armTypeUnlocked(GLOBAL.TYPE_FELINE))
-					{
-						kGAMECLASS.output("\n\nYour fingertips clench involuntarily, digging into your palms with painful pricks of sharpness. Reluctantly prying them open, you watch in shock as your nails gradually shift closer to your fingertips. They narrow even as they lengthen, resulting in a set of sharp, feline-looking claws. <b>You could give someone quite the nasty scratch with your new claws!</b>");
-						target.armType = GLOBAL.TYPE_FELINE;
-						target.clearArmFlags();
-						target.addArmFlag(GLOBAL.FLAG_FURRED);
-						changes++;
-					}
-					else
-					{
-						kGAMECLASS.output("\n\n" + target.armTypeLockedMessage());
-					}
-				}
+				// Arms not Lizan:
+			// Arms become Lizan. Arms gains scaled, paws flag.
+			if (target.armType != GLOBAL.TYPE_LIZAN)
+			{
+				if (target.armTypeUnlocked(GLOBAL.TYPE_LIZAN)) validTFs.push(function (target:Creature):void
+				{
+					output("\n\nYour arms begin to feel very odd, alternating between irritation and numbness, the sharp contrast causing greater discomfort than either sensation alone.");
+					if (!target.hasScales() && !target.hasArmFlag(GLOBAL.FLAG_SCALED)) output(" You idly begin to scratch some particularly itchy spots, only to unwittingly tear away patches of [pc.skinFurScales]. You cautiously remove the bizarre molt, revealing the scales that now cover your arms.");
+					output(" Distracted by the itching, you barely notice your hands shift and warp as your palm gains a subtle layer of padding and your fingertips sharpen into claws. <b>Your arms are now");
+					if (!target.hasScales() && !target.hasArmFlag(GLOBAL.FLAG_SCALED)) output(" scaley and");
+					output(" reptilian.</b>");
+					
+					target.armType = GLOBAL.TYPE_LIZAN;
+					target.clearArmFlags();
+					target.addArmFlag(GLOBAL.FLAG_SCALED);
+					target.addArmFlag(GLOBAL.FLAG_PAWS);
+				});
+				else lockedTFs.push(target.armTypeLockedMessage);
+			}
 				//Grow fur - req cat ears and naleen face!
 				if (target.skinType != GLOBAL.SKIN_TYPE_FUR && target.earType == GLOBAL.TYPE_FELINE && target.faceType == GLOBAL.TYPE_NALEEN_FACE && rand(3) == 0 && changes < changeLimit) {
 					if (target.skinTypeUnlocked(GLOBAL.SKIN_TYPE_FUR))
@@ -178,22 +174,22 @@ package classes.Items.Miscellaneous
 						kGAMECLASS.output("\n\n" + target.skinTypeLockedMessage());
 					}
 				}
-				//Cat ears - req naleen face
-				if (target.faceType == GLOBAL.TYPE_NALEEN_FACE && target.earType != GLOBAL.TYPE_FELINE && changes < changeLimit && rand(3) == 0) {
-					if (target.earTypeUnlocked(GLOBAL.TYPE_FELINE))
-					{
-						kGAMECLASS.output("\n\nAll sound vanishes in an instant. You clap your hands to your [pc.ears], wondering if you’ve gone deaf, but they come up against nothing! Your ears have vanished! Just as you start considering learning a form of sign language or finding a back alley geneticist, the sounds you were hearing before come back with an oddly directional twist. You feel around the sides and top of your head to quickly find your new ears. They’re triangular and perched atop your head, swiveling this way and that to help you easily identify the source of any noise. <b>You’ve grown cat-like naleen ears!</b>");
-						target.earType = GLOBAL.TYPE_FELINE;
-						target.clearEarFlags();
-						target.addEarFlag(GLOBAL.FLAG_TAPERED);
-						target.addEarFlag(GLOBAL.FLAG_FURRED);
-						changes++;
-					}
-					else
-					{
-						kGAMECLASS.output("\n\n" + target.earTypeLockedMessage());
-					}
+				
+			// Ears not Frog, Ovir or Lizan :
+			// Ears become Lizan.
+			if (!InCollection(target.earType, GLOBAL.TYPE_LIZAN, GLOBAL.TYPE_FROG, GLOBAL.TYPE_OVIR))
+			{
+				if (target.earTypeUnlocked(GLOBAL.TYPE_LIZAN)) validTFs.push(function (target:Creature):void
+				{
+					output("\n\nYour [pc.ears] begin to itch and burn, and you reach up to rub them. You’re surprised to find, however, that your ears have sunk into the sides of your head, leaving shallow divots for your hearing holes. <b>You now have snake ears!</b>");
+					
+					target.earType = GLOBAL.TYPE_LIZAN;
+					target.clearEarFlags();
+					target.earLength = 0;
+				});
+				else lockedTFs.push(target.earTypeLockedMessage);
 				}
+				
 				//Naleen Face - human but never has fur/scales/whatevs
 				if (target.faceType != GLOBAL.TYPE_NALEEN_FACE && changes < changeLimit && rand(5) == 0) {
 					if (target.faceTypeUnlocked(GLOBAL.TYPE_NALEEN_FACE))
@@ -327,8 +323,8 @@ package classes.Items.Miscellaneous
 				kGAMECLASS.output("Whatever the case, <b>you’re left with two, big pillowy " + target.breastCup(0) + "s.</b>");
 				changes++;
 			}
-			//Widen hips to 12
-			if (target.hipRatingRaw < 12 && target.hipRatingUnlocked(12) && changes < changeLimit && rand(3) == 0) {
+			//Widen hips to 15
+			if (target.hipRatingRaw < 15 && target.hipRatingUnlocked(15) && changes < changeLimit && rand(3) == 0) {
 				target.hipRatingRaw += 1 + rand(3);
 				kGAMECLASS.output("\n\nThere’s a little bit of extra shake whenever you shift position. A glance down to your waist reveals that your gait has widened with your [pc.hips]. You aren’t sure why a race that doesn’t have legs would have such wide hips anyway, but they do look nice on you.");
 				changes++;
@@ -337,21 +333,17 @@ package classes.Items.Miscellaneous
 			{
 				kGAMECLASS.output("\n\n" + target.hipRatingLockedMessage());
 			}
-			//Lengthen hair to ass-length!
-			if (target.hasHair() && target.hairLength < target.tallness/2 && target.hairLengthUnlocked(target.tallness / 2) && changes < changeLimit && rand(3) == 0)	{
-				x = 1 + rand(4);
-				kGAMECLASS.output("\n\nYour scalp tickles a little when your [pc.hair] lengthens, gaining ");
-				if (x == 1) kGAMECLASS.output("an inch");
-				else if (x == 2) kGAMECLASS.output("two inches");
-				else if (x == 3) kGAMECLASS.output("three inches");
-				else kGAMECLASS.output("four inches");
-				kGAMECLASS.output(" of new length. Well, that’s nothing you can’t get changed at a salon, at least.");
-				target.hairLength += x;
-				changes++;
-			}
-			else if (!target.hairLengthUnlocked(target.tallness / 2))
+			
+			// Hair length not zero:
+			// Hair length set to zero (bald). Does not affect goo or slime hair type.
+			if (target.hairLength > 0)
 			{
-				kGAMECLASS.output("\n\n" + target.hairLengthLockedMessage());
+				if (target.hairType != GLOBAL.TYPE_GOOEY && target.hairLengthUnlocked(0)) validTFs.push(function (target:Creature):void
+				{
+					output("\n\nYou notice something [pc.hairColor] drifting down past your eyes. As you reach up to snag it, you recognize it as a bit of your [pc.hairNoun]. Lifting your hands up, you feel your [pc.hairs] coming loose. Before you know it, your entire head is barren. <b>You are now bald.</b>");
+					target.hairLength = 0;
+				});
+				else lockedTFs.push(target.hairLengthLockedMessage);
 			}
 			return changes;
 		}
@@ -495,31 +487,6 @@ package classes.Items.Miscellaneous
 				target.cocks[x].cLengthRaw += 1 + rand(3);
 				if(target.hasPerk("Hung")) target.cocks[x].cLengthRaw += 1 + rand(3);
 				kGAMECLASS.output(" You’re thicker to match, too.");
-				changes++;
-			}
-			//Reduce breasts to flat if uncunted.
-			if(!target.hasVagina() && target.biggestTitSize() >= 1 && target.breastRatingUnlocked(target.biggestTitRow(), 0) && changes < changeLimit && rand(2) == 0) {
-				kGAMECLASS.output("\n\nAs you’re waiting ");
-				if(changes > 0) kGAMECLASS.output("for the changes to finish");
-				else kGAMECLASS.output("for any mutations to manifest");
-				kGAMECLASS.output(", your [pc.fullChest] tightens. There’s no warning, no slow heat or mounting change, just the sudden and abrupt loss of a cup size");
-				if(target.bRows() > 1) {
-					y = 0;
-					for(x = 0; x < target.bRows(); x++) {
-						if(target.breastRows[x].breastRatingRaw >= 1) {
-							y++;
-							if(target.breastRows[x].breastRatingRaw >= 6) target.breastRows[x].breastRatingRaw -= 2;
-							else target.breastRows[x].breastRatingRaw--;
-						}
-					}
-					if(y > 1) kGAMECLASS.output(" across every row bigger than a bee-sting");
-				}
-				else {
-					if(target.breastRows[0].breastRatingRaw >= 6) target.breastRows[0].breastRatingRaw -= 2;
-					else target.breastRows[0].breastRatingRaw--;
-				}
-				if(target.biggestTitSize() < 1) kGAMECLASS.output(", leaving you as flat as a board");
-				kGAMECLASS.output(".");
 				changes++;
 			}
 			return changes;
