@@ -114,11 +114,11 @@ package classes.Items.Miscellaneous
 					}
 				}
 
-				// Arms not Lizan:
-			// Arms become Lizan. Arms gains scaled, paws flag.
-			if (target.armType != GLOBAL.TYPE_LIZAN)
+			// Arms not Ovir:
+			// Arms become Ovir. Arms gains scaled, paws flag.
+			if (target.armType != GLOBAL.TYPE_OVIR)
 			{
-				if (target.armTypeUnlocked(GLOBAL.TYPE_LIZAN)) validTFs.push(function (target:Creature):void
+				if (target.armTypeUnlocked(GLOBAL.TYPE_OVIR)) validTFs.push(function (target:Creature):void
 				{
 					output("\n\nYour arms begin to feel very odd, alternating between irritation and numbness, the sharp contrast causing greater discomfort than either sensation alone.");
 					if (!target.hasScales() && !target.hasArmFlag(GLOBAL.FLAG_SCALED)) output(" You idly begin to scratch some particularly itchy spots, only to unwittingly tear away patches of [pc.skinFurScales]. You cautiously remove the bizarre molt, revealing the scales that now cover your arms.");
@@ -126,40 +126,30 @@ package classes.Items.Miscellaneous
 					if (!target.hasScales() && !target.hasArmFlag(GLOBAL.FLAG_SCALED)) output(" scaley and");
 					output(" reptilian.</b>");
 					
-					target.armType = GLOBAL.TYPE_LIZAN;
+					target.armType = GLOBAL.TYPE_OVIR;
 					target.clearArmFlags();
 					target.addArmFlag(GLOBAL.FLAG_SCALED);
 					target.addArmFlag(GLOBAL.FLAG_PAWS);
 				});
 				else lockedTFs.push(target.armTypeLockedMessage);
 			}
-				//Grow fur - req cat ears and naleen face!
-				if (target.skinType != GLOBAL.SKIN_TYPE_FUR && target.earType == GLOBAL.TYPE_FELINE && target.faceType == GLOBAL.TYPE_NALEEN_FACE && rand(3) == 0 && changes < changeLimit) {
-					if (target.skinTypeUnlocked(GLOBAL.SKIN_TYPE_FUR))
+			
+				// Face not Naga:
+				// Face becomes Naga. Face gains muzzled flag. Requires scale skintype.
+				else if (target.faceType != GLOBAL.TYPE_NAGA)
+				{
+					if (target.faceTypeUnlocked(GLOBAL.TYPE_NAGA) && target.faceFlagsUnlocked(GLOBAL.FLAG_MUZZLED)) validTFs.push(function (target:Creature):void
 					{
-						kGAMECLASS.output("\n\nHairs erupt from the [pc.skinFurScales] of your right bicep, then your left.");
-						if(target.skinType == GLOBAL.SKIN_TYPE_SCALES || target.skinType == GLOBAL.SKIN_TYPE_CHITIN) {
-							kGAMECLASS.output(" They’re emerging with such speed and rapidly that they pry away the ");
-							if(target.skinType == GLOBAL.SKIN_TYPE_SCALES) kGAMECLASS.output("scales");
-							else kGAMECLASS.output("chitin");
-							kGAMECLASS.output(" to expose your [pc.skin] even as they grow in overtop of it.");
-						}
-						//Set fur color!
-						if(target.furColor != "orange" && target.furColor != "black" && target.furColor != "white") {
-							if(rand(3) == 0) target.furColor = "orange";
-							else if(rand(2) == 0) target.furColor = "black";
-							else target.furColor = "white";
-						}
-						//orange, black, white
-						kGAMECLASS.output(" The coat of fur thickens and spreads as you watch, moving to your shoulders while a new patch appears on your [pc.belly]. The fur there is softer than elsewhere but growing just as forcefully. Most of your body, even your [pc.butt], is soon covered with the stuff. The layer of fluff thickens and lengthens until <b>your skin is hidden under the " + target.furColor + " coat.</b>");
-						target.skinType = GLOBAL.SKIN_TYPE_FUR;
-						target.clearSkinFlags();
-						changes++;
-					}
-					else
-					{
-						kGAMECLASS.output("\n\n" + target.skinTypeLockedMessage());
-					}
+						output("\n\nYou begin to feel a small itching crawling across your face and suddenly the itching begins to become more intense and it begins to feel as though something is starting to crow out of the skin on your face, next you feel as though its growing, you look down and begin to see");
+						if (!target.hasFaceFlag(GLOBAL.FLAG_LONG) || !target.hasFaceFlag(GLOBAL.FLAG_MUZZLED)) output(" it strectching outward ");
+						output(" into a new, scaled muzzle. Using your Codex’s camera, you inspect <b>your new snake like face</b> you feel something changing in your mouth and open it just in time to see your teeth retracting into your gums and<b> a new pair of snake-like fangs</b> replacing them");
+					
+						target.faceType = GLOBAL.TYPE_NAGA;
+						target.clearFaceFlags();
+						target.addFaceFlag(GLOBAL.FLAG_MUZZLED);
+					});
+					else if (!target.faceTypeUnlocked(GLOBAL.TYPE_NAGA)) lockedTFs.push(target.faceTypeLockedMessage);
+					else lockedTFs.push(target.faceFlagsLockedMessage);
 				}
 				
 			// Ears not Frog, Ovir or Lizan :
