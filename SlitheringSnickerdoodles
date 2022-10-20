@@ -311,17 +311,22 @@ package classes.Items.Miscellaneous
 				kGAMECLASS.output("\n\n" + target.hipRatingLockedMessage());
 			}
 			
-			// Hair length not zero:
+			// not bald, not hood:
+			// hair length not zero
 			// Hair length set to zero (bald). Does not affect goo or slime hair type.
-			if (target.hairLength > 0)
+			if (target.hairType != GLOBAL.HAIR_TYPE_HOOD)
 			{
-				if (target.hairType != GLOBAL.TYPE_GOOEY && target.hairLengthUnlocked(0)) validTFs.push(function (target:Creature):void
-				{
-					output("\n\nYou notice something [pc.hairColor] drifting down past your eyes. As you reach up to snag it, you recognize it as a bit of your [pc.hairNoun]. Lifting your hands up, you feel your [pc.hairs] coming loose. Before you know it, your entire head is barren. <b>You are now bald.</b>");
-					target.hairLength = 0;
+				options.push(function():*{
+					if (!target.hairTypeUnlocked(GLOBAL.HAIR_TYPE_HOOD)) {
+						output("\n\n" + target.hairTypeLockedMessage());
+						return;
+					}
+					
+					if (target.hasHair()) output("You begin to feel a strange tingling on your scalp and on the sides of head, upon reaching your hand up to scratch it you feel your [pc.Hair] fall off your head into your hand, upon further investigation you begin to feel a small growth on and around your head, within minutes the growth has expanded and become <b>a full snake hood the same color as your [pc.skinFurScales]</b>");
+					
+					target.hairType = GLOBAL.HAIR_TYPE_HOOD;
+					target.hairStyle = "null";
 				});
-				else lockedTFs.push(target.hairLengthLockedMessage);
-			}
 			return changes;
 		}
 		//Male TFs
