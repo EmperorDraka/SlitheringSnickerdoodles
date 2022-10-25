@@ -134,11 +134,11 @@ package classes.Items.Miscellaneous
 				else lockedTFs.push(target.armTypeLockedMessage);
 			}
 			
-				// Face not Naga:
-				// Face becomes Naga. Face gains muzzled flag. Requires scale skintype.
+				// Face not Lizan:
+				// Face becomes Lizan. Face gains muzzled flag. Requires scale skintype.
 				else if (target.faceType != GLOBAL.TYPE_NAGA)
 				{
-					if (target.faceTypeUnlocked(GLOBAL.TYPE_NAGA) && target.faceFlagsUnlocked(GLOBAL.FLAG_MUZZLED)) validTFs.push(function (target:Creature):void
+					if (target.faceTypeUnlocked(GLOBAL.TYPE_LIZAN) && target.faceFlagsUnlocked(GLOBAL.FLAG_MUZZLED)) validTFs.push(function (target:Creature):void
 					{
 						output("\n\nYou begin to feel a small itching crawling across your face and suddenly the itching begins to become more intense and it begins to feel as though something is starting to crow out of the skin on your face, next you feel as though its growing, you look down and begin to see");
 						if (!target.hasFaceFlag(GLOBAL.FLAG_LONG) || !target.hasFaceFlag(GLOBAL.FLAG_MUZZLED)) output(" it strectching outward ");
